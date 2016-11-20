@@ -21,5 +21,6 @@ void UTankBarrel::Elevate(float RelativeSpeed) {
 	auto Elevation = FMath::Clamp<float>(RawNewElevation, MinElevationDegrees, MaxElevationDegrees);
 
 	// Setting the rotation to USceneComponent::RelativeRotation.
+	UE_LOG(LogTemp, Warning, TEXT("Elevation: {%f}"), Elevation);
 	SetRelativeRotation(FRotator(Elevation, 0, 0));
 }

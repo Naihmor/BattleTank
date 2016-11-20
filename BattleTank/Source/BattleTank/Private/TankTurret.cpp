@@ -15,11 +15,12 @@ void UTankTurret::Rotate(float RelativeSpeed) {
 	auto RotationChange = RelativeSpeed * MaxDegreesPerSecond * GetWorld()->DeltaTimeSeconds;
 
 	// USceneComponent::RelativeRotation. Here we're adding the elevation calculated previously, to the TankTurret Pitch. (?)-> Pitch(translation): elevacion, pentiente.
-	auto Rotation = RelativeRotation.Pitch + RotationChange;
+	auto Rotation = RelativeRotation.Yaw + RotationChange;
 
 	// Clamping the new calculated elevation with max & min elevation degrees constants.
 	//auto Elevation = FMath::Clamp<float>(RawNewElevation, MinElevationDegrees, MaxElevationDegrees);
 
 	// Setting the rotation to USceneComponent::RelativeRotation.
+	UE_LOG(LogTemp,Warning,TEXT("Rotation: {%f}"),Rotation);
 	SetRelativeRotation(FRotator(0, Rotation, 0));
 }
