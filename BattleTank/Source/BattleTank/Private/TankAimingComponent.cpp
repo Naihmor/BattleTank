@@ -2,6 +2,7 @@
 
 #include "BattleTank.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 #include "TankAimingComponent.h"
 
 // Sets default values for this component's properties
@@ -18,6 +19,11 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 	Barrel = BarrelToSet;
 }
 
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
+{
+	Turret = TurretToSet;
+}
+
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
 	//FString CurrentTankName = GetOwner()->GetName();
@@ -25,6 +31,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	//UE_LOG(LogTemp, Warning, TEXT("*** %s aiming %s from %s"), *CurrentTankName, *HitLocation.ToString(), *BarrelLocation.ToString());
 
 	if (!Barrel) { return; }
+	if (!Turret) { return; }
 
 	FVector LaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -32,7 +39,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	// Calculate LaunchVelocity
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(
 		this,
-		LaunchVelocity,
+		LaunchVelocity, OUT
 		StartLocation,
 		HitLocation,
 		LaunchSpeed,
@@ -47,6 +54,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	{
 		auto AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
+		MoveTurretTowards(AimDirection);
 		auto TankName = GetOwner()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("%f: %s is aiming at %s"), Time, *TankName, *AimDirection.ToString());
 	}
@@ -64,4 +72,13 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 
 	Barrel->Elevate(DeltaRotator.Pitch);
+}
+
+void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
+{
+	auto TurretRotator = Turret->GetUpVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - TurretRotator;
+
+	Turret->Rotate(DeltaRotator.Yaw);
 }
