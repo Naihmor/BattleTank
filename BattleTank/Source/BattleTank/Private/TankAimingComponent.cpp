@@ -14,24 +14,20 @@ UTankAimingComponent::UTankAimingComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
-{
-	if (!BarrelToSet) { return; }
-	Barrel = BarrelToSet;
+void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet) 
+{ 
+	if (!BarrelToSet) { return; } 
+	Barrel = BarrelToSet; 
 }
 
-void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
-{
-	if (!TurretToSet) { return; }
-	Turret = TurretToSet;
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet) 
+{ 
+	if (!TurretToSet) { return; } 
+	Turret = TurretToSet; 
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	//FString CurrentTankName = GetOwner()->GetName();
-	//FVector BarrelLocation = Barrel->GetComponentLocation();
-	//UE_LOG(LogTemp, Warning, TEXT("*** %s aiming %s from %s"), *CurrentTankName, *HitLocation.ToString(), *BarrelLocation.ToString());
-
 	if (!Barrel) { return; }
 	if (!Turret) { return; }
 
@@ -54,15 +50,10 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	auto Time = GetWorld()->GetTimeSeconds();
 	if (bHaveAimSolution)
 	{
+		// GetSafeNormal() is used to get a well-formatted Vector from another Vector.
 		auto AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 		MoveTurretTowards(AimDirection);
-		auto TankName = GetOwner()->GetName();
-		//UE_LOG(LogTemp, Warning, TEXT("%f: %s is aiming at %s"), Time, *TankName, *AimDirection.ToString());
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("%f: No aim solution found"), Time);
 	}
 }
 
@@ -74,7 +65,6 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 	auto DeltaRotator = AimAsRotator - BarrelRotator;
 
 	Barrel->Elevate(DeltaRotator.Pitch);
-	//Turret->Rotate(DeltaRotator.Yaw);
 }
 
 void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
